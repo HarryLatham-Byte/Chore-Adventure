@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noah & Levi's Chore Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Quicksand:wght@500;700&display=swap');
+        
+        :root {
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --border-color: #e2e8f0;
+            --accent-teal: #008375;
+            --tab-inactive: #e2e8f0;
+        }
+
+        .dark {
+            --bg-main: #020617;
+            --bg-card: #0f172a;
+            --text-main: #f1f5f9;
+            --border-color: #334155;
+            --tab-inactive: #1e293b;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
+        }
+        h1, h2, h3, .kid-name { font-family: 'Bungee', cursive; }
+
+        .teal-brand-text { color: var(--accent-teal); }
+        .teal-brand-bg { background-color: var(--accent-teal); }
+
+        .bubble {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+        }
+        .bubble:hover { transform: scale(1.05); border-color: var(--accent-teal); box-shadow: 0 10px 15px -3px rgba(0, 131, 117, 0.2); }
+        .bubble:active { transform: scale(0.95); }
+        
+        .pop-animation {
+            animation: pop 0.4s ease-out forwards;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .tab-btn {
+            background-color: var(--tab-inactive);
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-card);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: var(--accent-teal);
+            border: 2px solid var(--accent-teal);
+        }
+
+        .custom-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Redesigned Daily Essentials */
+        .daily-tile {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .daily-tile:has(input:checked) {
+            border-color: var(--accent-teal);
+            background: rgba(0, 131, 117, 0.1);
+            transform: translateY(-2px);
+        }
+        .daily-tile:has(input:disabled) {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <div class="max-w-4xl mx-auto px-4 pt-6">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl md:text-5xl teal-brand-text drop-shadow-sm">Chore Adventure!</h1>
+            <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-white dark:bg-slate-800 text-2xl shadow-sm border border-slate-200 dark:border-slate-700 transition-transform active:scale-90" id="themeIcon">
+                ☀️
+            </button>
+        </div>
+
+        <!-- Chore Factory -->
+        <div class="mb-8 custom-card p-4 rounded-3xl">
+            <div class="flex gap-3">
+                <input type="text" id="customChoreInput" placeholder="Add a periodic chore..." 
+                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 outline-none text-sm focus:border-teal-600 transition-all text-slate-800 dark:text-white">
+                <button onclick="addCustomChore()" 
+                    class="teal-brand-bg hover:brightness-110 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-teal-900/10 active:scale-95">
+                    ADD
+                </button>
+            </div>
+        </div>
+
+        <!-- Kid Switcher Tabs -->
+        <div class="flex bg-slate-200 dark:bg-slate-800 p-1.5 rounded-3xl mb-8 border border-slate-300 dark:border-slate-700">
+            <button onclick="switchTab('noah')" id="tabNoah" class="tab-btn active flex-1 py-4 rounded-2xl font-bold transition-all">NOAH</button>
+            <button onclick="switchTab('levi')" id="tabLevi" class="tab-btn flex-1 py-4 rounded-2xl font-bold transition-all">LEVI</button>
+        </div>
+
+        <!-- New Visual Daily Essentials Area -->
+        <div class="mb-8 bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between mb-4 px-2">
+                <h3 class="text-xs font-bold teal-brand-text uppercase tracking-widest">☀️ Daily Essentials</h3>
+                <span class="text-[10px] font-bold bg-teal-500/10 teal-brand-text px-2 py-1 rounded-lg border border-teal-500/20">$0.50 BONUS</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <input type="checkbox" id="check-bed" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold">Make Bed</span>
+                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Every Morning</span>
+                    </div>
+                </label>
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <input type="checkbox" id="check-room" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold">Clean Room</span>
+                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Keep it tidy</span>
+                    </div>
+                </label>
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <input type="checkbox" id="check-teeth" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold">Brush Teeth</span>
+                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Twice a day</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Kid Content Area -->
+        <div id="kidContainer" class="space-y-6">
+            <div id="activeKidCard" class="custom-card rounded-[2.5rem] shadow-2xl p-8 border-t-8 border-sky-400 relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
+                    <div>
+                        <h2 id="displayKidName" class="text-3xl text-sky-500 kid-name">NOAH</h2>
+                        <div class="text-5xl font-bold tracking-tight">$<span id="displayCash">0.00</span></div>
+                        <div class="text-slate-400 font-bold text-xs uppercase mt-2 tracking-widest">⭐ <span id="displayCount">0</span> Chores Done</div>
+                    </div>
+                    <div class="flex flex-col gap-2 w-full sm:w-auto">
+                        <button onclick="showBulkAddModal()" class="w-full bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-2xl font-bold text-xs shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2">
+                            <span>➕</span> ADD FUNDS
+                        </button>
+                        <button onclick="showSpendModal()" class="w-full bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-2xl font-bold text-xs shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2">
+                            <span>💸</span> SPEND FUNDS
+                        </button>
+                    </div>
+                </div>
+                
+                <h4 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-tighter">Periodic Adventure Bubbles ($0.50 each)</h4>
+                <div id="bubbleZone" class="flex flex-wrap gap-4 justify-center min-h-[200px] content-start py-4">
+                    <!-- Bubbles Injected Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="mt-8 custom-card p-8 rounded-[2.5rem]">
+            <h3 class="text-xl font-bold mb-6 text-center teal-brand-text">Bank Growth</h3>
+            <div class="chart-container h-[250px]">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="mt-8 bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl text-white border-2 border-slate-800">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl">📜 History</h2>
+                <input type="date" id="logDateFilter" onchange="renderLog()" class="bg-slate-800 text-xs p-2 rounded-xl outline-none text-teal-400">
+            </div>
+            <div id="adventureLog" class="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- Spending Modal -->
+    <div id="spendModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center p-4 z-50 backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 w-full max-w-md">
+            <h3 class="text-3xl kid-name mb-4 text-rose-500">SPENDING!</h3>
+            <div class="space-y-4">
+                <input type="text" id="spendItem" placeholder="What did you buy?" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none focus:border-rose-500 text-slate-800 dark:text-white">
+                <input type="number" id="spendAmount" step="0.01" placeholder="Price" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none text-xl font-bold focus:border-rose-500 text-slate-800 dark:text-white">
+            </div>
+            <div class="flex gap-4 mt-8">
+                <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
+                <button onclick="confirmSpend()" class="flex-[2] py-4 bg-rose-500 text-white rounded-2xl font-bold shadow-lg shadow-rose-500/30">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Add Modal -->
+    <div id="bulkAddModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center p-4 z-50 backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 w-full max-w-md">
+            <h3 class="text-3xl kid-name mb-4 text-teal-500">ADD FUNDS</h3>
+            <div class="space-y-4">
+                <input type="text" id="bulkReason" placeholder="Reason (e.g. Extra help, Birthday)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none focus:border-teal-500 text-slate-800 dark:text-white">
+                <input type="number" id="bulkAmount" step="0.01" placeholder="Amount ($)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none text-xl font-bold focus:border-teal-500 text-slate-800 dark:text-white">
+            </div>
+            <div class="flex gap-4 mt-8">
+                <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
+                <button onclick="confirmBulkAdd()" class="flex-[2] py-4 bg-teal-600 text-white rounded-2xl font-bold shadow-lg shadow-teal-500/30">Add Money</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const kids = {
+            noah: { name: 'Noah', color: '#38bdf8', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false },
+            levi: { name: 'Levi', color: '#fb7185', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false }
+        };
+
+        let currentKid = 'noah';
+        let timelineChart;
+        let isDarkMode = true;
+        let periodicChores = ["Vacuuming", "Laundry Sort", "Clean Table", "Clear Driveway", "Mop"];
+
+        function init() {
+            document.documentElement.classList.add('dark');
+            initChart();
+            renderBubbles();
+            updateUI();
+            document.getElementById('logDateFilter').valueAsDate = new Date();
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark');
+            document.getElementById('themeIcon').innerText = isDarkMode ? '☀️' : '🌙';
+            timelineChart.options.scales.y.grid.color = isDarkMode ? '#1e293b' : '#e2e8f0';
+            timelineChart.update();
+        }
+
+        function switchTab(kid) {
+            currentKid = kid;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(kid === 'noah' ? 'tabNoah' : 'tabLevi').classList.add('active');
+            
+            const k = kids[currentKid];
+            document.getElementById('check-bed').checked = k.dailyDone;
+            document.getElementById('check-room').checked = k.dailyDone;
+            document.getElementById('check-teeth').checked = k.dailyDone;
+            document.getElementById('check-bed').disabled = k.dailyDone;
+            document.getElementById('check-room').disabled = k.dailyDone;
+            document.getElementById('check-teeth').disabled = k.dailyDone;
+
+            updateUI();
+            renderBubbles();
+        }
+
+        function checkDailyBundle() {
+            const bed = document.getElementById('check-bed').checked;
+            const room = document.getElementById('check-room').checked;
+            const teeth = document.getElementById('check-teeth').checked;
+            const kid = kids[currentKid];
+
+            if (bed && room && teeth && !kid.dailyDone) {
+                kid.dailyDone = true;
+                rewardKid("Daily Trio Bundle", 0.50);
+                document.getElementById('check-bed').disabled = true;
+                document.getElementById('check-room').disabled = true;
+                document.getElementById('check-teeth').disabled = true;
+            }
+        }
+
+        function renderBubbles() {
+            const container = document.getElementById('bubbleZone');
+            container.innerHTML = '';
+            periodicChores.forEach((chore) => {
+                const bubble = document.createElement('div');
+                bubble.className = `bubble p-4 rounded-3xl shadow-sm flex items-center justify-center text-center font-bold text-slate-500 w-24 h-24 text-[10px] leading-tight`;
+                bubble.innerText = chore;
+                bubble.onclick = (e) => popBubble(e, chore);
+                container.appendChild(bubble);
+            });
+        }
+
+        function popBubble(event, choreName) {
+            const bubble = event.currentTarget;
+            bubble.classList.add('pop-animation');
+            setTimeout(() => {
+                bubble.remove();
+                rewardKid(choreName, 0.50);
+                setTimeout(() => renderBubbles(), 3000); 
+            }, 400);
+        }
+
+        function rewardKid(itemName, amount) {
+            const kid = kids[currentKid];
+            kid.cash += amount;
+            if (amount === 0.50) kid.count += 1;
+            const now = new Date();
+            kid.history.push({ t: now, v: kid.cash });
+            kid.logs.push({ type: 'EARN', item: itemName, amount: amount, date: now });
+            updateUI();
+            updateTimeline();
+            renderLog();
+        }
+
+        function updateUI() {
+            const kid = kids[currentKid];
+            const card = document.getElementById('activeKidCard');
+            card.style.borderTopColor = kid.color;
+            document.getElementById('displayKidName').innerText = kid.name.toUpperCase();
+            document.getElementById('displayKidName').style.color = kid.color;
+            document.getElementById('displayCash').innerText = kid.cash.toFixed(2);
+            document.getElementById('displayCount').innerText = kid.count;
+        }
+
+        function renderLog() {
+            const logContainer = document.getElementById('adventureLog');
+            const filterDate = document.getElementById('logDateFilter').value;
+            logContainer.innerHTML = '';
+            let allLogs = [...kids.noah.logs, ...kids.levi.logs];
+            if (filterDate) allLogs = allLogs.filter(e => e.date.toISOString().split('T')[0] === filterDate);
+            allLogs.sort((a, b) => b.date - a.date);
+            if (allLogs.length === 0) {
+                logContainer.innerHTML = '<p class="text-slate-600 italic text-center text-xs py-4">No activity yet.</p>';
+                return;
+            }
+            allLogs.forEach(entry => {
+                const kid = kids.noah.logs.includes(entry) ? kids.noah : kids.levi;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border border-white/5 flex justify-between items-center text-xs ${entry.type==='EARN'?'bg-emerald-500/10':'bg-rose-500/10'}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="font-bold">${kid.name}: ${entry.item}</div>
+                        <div class="opacity-40 text-[10px] uppercase">${entry.date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                    </div>
+                    <div class="font-bold ${entry.type==='EARN'?'text-emerald-400':'text-rose-400'}">
+                        ${entry.type==='EARN'?'+':'-'}$${entry.amount.toFixed(2)}
+                    </div>`;
+                logContainer.appendChild(card);
+            });
+        }
+
+        function addCustomChore() {
+            const input = document.getElementById('customChoreInput');
+            const val = input.value.trim();
+            if (val) {
+                periodicChores.push(val);
+                input.value = '';
+                renderBubbles();
+            }
+        }
+
+        window.showSpendModal = () => document.getElementById('spendModal').classList.replace('hidden', 'flex');
+        window.showBulkAddModal = () => document.getElementById('bulkAddModal').classList.replace('hidden', 'flex');
+        
+        window.closeModals = () => {
+            document.getElementById('spendModal').classList.replace('flex', 'hidden');
+            document.getElementById('bulkAddModal').classList.replace('flex', 'hidden');
+            document.getElementById('spendItem').value = '';
+            document.getElementById('spendAmount').value = '';
+            document.getElementById('bulkReason').value = '';
+            document.getElementById('bulkAmount').value = '';
+        };
+
+        window.confirmSpend = () => {
+            const item = document.getElementById('spendItem').value.trim() || 'Shopping';
+            const amount = parseFloat(document.getElementById('spendAmount').value) || 0;
+            const kid = kids[currentKid];
+            if (amount > 0) {
+                kid.cash -= amount;
+                const now = new Date();
+                kid.history.push({ t: now, v: kid.cash });
+                kid.logs.push({ type: 'SPEND', item: item, amount: amount, date: now });
+                updateUI();
+                updateTimeline();
+                renderLog();
+                closeModals();
+            }
+        };
+
+        window.confirmBulkAdd = () => {
+            const reason = document.getElementById('bulkReason').value.trim() || 'Extra Reward';
+            const amount = parseFloat(document.getElementById('bulkAmount').value) || 0;
+            if (amount > 0) {
+                rewardKid(`🌟 ${reason}`, amount);
+                closeModals();
+            }
+        };
+
+        function initChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'Noah', borderColor: '#38bdf8', data: kids.noah.history.map(h => ({x: h.t, y: h.v})), tension: 0.3, fill: false },
+                        { label: 'Levi', borderColor: '#fb7185', data: kids.levi.history.map(h => ({x: h.t, y: h.v})), tension: 0.3, fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'time', display: false },
+                        y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
+                    },
+                    plugins: { legend: { labels: { color: '#64748b' } } }
+                }
+            });
+        }
+
+        function updateTimeline() {
+            timelineChart.data.datasets[0].data = kids.noah.history.map(h => ({x: h.t, y: h.v}));
+            timelineChart.data.datasets[1].data = kids.levi.history.map(h => ({x: h.t, y: h.v}));
+            timelineChart.update();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
