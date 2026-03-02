@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,27 +11,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Quicksand:wght@500;700&display=swap');
         
         :root {
-            --bg-main: #f1f5f9;
+            --bg-main: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #1e293b;
             --border-color: #e2e8f0;
             --accent-teal: #008375;
-            --tab-inactive: #e2e8f0;
-        }
-
-        .dark {
-            --bg-main: #020617;
-            --bg-card: #0f172a;
-            --text-main: #f1f5f9;
-            --border-color: #334155;
-            --tab-inactive: #1e293b;
+            --tab-inactive: #f1f5f9;
         }
 
         body { 
             font-family: 'Quicksand', sans-serif; 
             background-color: var(--bg-main);
             color: var(--text-main);
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
         }
         h1, h2, h3, .kid-name { font-family: 'Bungee', cursive; }
 
@@ -45,7 +36,11 @@
             background-color: var(--bg-card);
             border: 2px solid var(--border-color);
         }
-        .bubble:hover { transform: scale(1.05); border-color: var(--accent-teal); box-shadow: 0 10px 15px -3px rgba(0, 131, 117, 0.2); }
+        .bubble:hover { 
+            transform: scale(1.05); 
+            border-color: var(--accent-teal); 
+            box-shadow: 0 10px 15px -3px rgba(0, 131, 117, 0.1); 
+        }
         .bubble:active { transform: scale(0.95); }
         
         .pop-animation {
@@ -65,7 +60,7 @@
 
         .tab-btn.active {
             background-color: var(--bg-card);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             color: var(--accent-teal);
             border: 2px solid var(--accent-teal);
         }
@@ -73,16 +68,16 @@
         .custom-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* Redesigned Daily Essentials */
         .daily-tile {
             transition: all 0.2s ease;
-            border: 2px solid transparent;
+            border: 2px solid #f1f5f9;
         }
         .daily-tile:has(input:checked) {
             border-color: var(--accent-teal);
-            background: rgba(0, 131, 117, 0.1);
+            background: rgba(0, 131, 117, 0.05);
             transform: translateY(-2px);
         }
         .daily-tile:has(input:disabled) {
@@ -100,54 +95,52 @@
         <!-- Top Bar -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl md:text-5xl teal-brand-text drop-shadow-sm">Chore Adventure!</h1>
-            <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-white dark:bg-slate-800 text-2xl shadow-sm border border-slate-200 dark:border-slate-700 transition-transform active:scale-90" id="themeIcon">
-                ☀️
-            </button>
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Parent Dashboard</div>
         </div>
 
         <!-- Chore Factory -->
         <div class="mb-8 custom-card p-4 rounded-3xl">
             <div class="flex gap-3">
-                <input type="text" id="customChoreInput" placeholder="Add a periodic chore..." 
-                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 outline-none text-sm focus:border-teal-600 transition-all text-slate-800 dark:text-white">
+                <input type="text" id="customChoreInput" placeholder="Add a new adventure..." 
+                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-sm focus:border-teal-600 transition-all text-slate-800">
                 <button onclick="addCustomChore()" 
-                    class="teal-brand-bg hover:brightness-110 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-teal-900/10 active:scale-95">
+                    class="teal-brand-bg hover:brightness-110 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg active:scale-95">
                     ADD
                 </button>
             </div>
         </div>
 
         <!-- Kid Switcher Tabs -->
-        <div class="flex bg-slate-200 dark:bg-slate-800 p-1.5 rounded-3xl mb-8 border border-slate-300 dark:border-slate-700">
+        <div class="flex bg-slate-200 p-1.5 rounded-3xl mb-8 border border-slate-300">
             <button onclick="switchTab('noah')" id="tabNoah" class="tab-btn active flex-1 py-4 rounded-2xl font-bold transition-all">NOAH</button>
             <button onclick="switchTab('levi')" id="tabLevi" class="tab-btn flex-1 py-4 rounded-2xl font-bold transition-all">LEVI</button>
         </div>
 
-        <!-- New Visual Daily Essentials Area -->
-        <div class="mb-8 bg-slate-100 dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800">
+        <!-- Daily Essentials Area -->
+        <div class="mb-8 bg-slate-100 p-6 rounded-[2.5rem] border border-slate-200">
             <div class="flex items-center justify-between mb-4 px-2">
                 <h3 class="text-xs font-bold teal-brand-text uppercase tracking-widest">☀️ Daily Essentials</h3>
                 <span class="text-[10px] font-bold bg-teal-500/10 teal-brand-text px-2 py-1 rounded-lg border border-teal-500/20">$0.50 BONUS</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
                     <input type="checkbox" id="check-bed" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
                     <div class="flex flex-col">
-                        <span class="text-sm font-bold">Make Bed</span>
+                        <span class="text-sm font-bold">🛏️ Make Bed</span>
                         <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Every Morning</span>
                     </div>
                 </label>
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
                     <input type="checkbox" id="check-room" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
                     <div class="flex flex-col">
-                        <span class="text-sm font-bold">Clean Room</span>
+                        <span class="text-sm font-bold">🧸 Clean Room</span>
                         <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Keep it tidy</span>
                     </div>
                 </label>
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
                     <input type="checkbox" id="check-teeth" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
                     <div class="flex flex-col">
-                        <span class="text-sm font-bold">Brush Teeth</span>
+                        <span class="text-sm font-bold">🪥 Brush Teeth</span>
                         <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Twice a day</span>
                     </div>
                 </label>
@@ -156,11 +149,11 @@
 
         <!-- Kid Content Area -->
         <div id="kidContainer" class="space-y-6">
-            <div id="activeKidCard" class="custom-card rounded-[2.5rem] shadow-2xl p-8 border-t-8 border-sky-400 relative overflow-hidden">
+            <div id="activeKidCard" class="custom-card rounded-[2.5rem] shadow-xl p-8 border-t-8 border-sky-400 relative overflow-hidden bg-white">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
                     <div>
                         <h2 id="displayKidName" class="text-3xl text-sky-500 kid-name">NOAH</h2>
-                        <div class="text-5xl font-bold tracking-tight">$<span id="displayCash">0.00</span></div>
+                        <div class="text-5xl font-bold tracking-tight text-slate-800">$<span id="displayCash">0.00</span></div>
                         <div class="text-slate-400 font-bold text-xs uppercase mt-2 tracking-widest">⭐ <span id="displayCount">0</span> Chores Done</div>
                     </div>
                     <div class="flex flex-col gap-2 w-full sm:w-auto">
@@ -173,15 +166,15 @@
                     </div>
                 </div>
                 
-                <h4 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-tighter">Periodic Adventure Bubbles ($0.50 each)</h4>
-                <div id="bubbleZone" class="flex flex-wrap gap-4 justify-center min-h-[200px] content-start py-4">
+                <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest border-b pb-2">Periodic Adventures ($0.50 each)</h4>
+                <div id="bubbleZone" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 justify-center min-h-[200px] py-4">
                     <!-- Bubbles Injected Here -->
                 </div>
             </div>
         </div>
 
         <!-- Progress -->
-        <div class="mt-8 custom-card p-8 rounded-[2.5rem]">
+        <div class="mt-8 custom-card p-8 rounded-[2.5rem] bg-white">
             <h3 class="text-xl font-bold mb-6 text-center teal-brand-text">Bank Growth</h3>
             <div class="chart-container h-[250px]">
                 <canvas id="timelineChart"></canvas>
@@ -189,22 +182,22 @@
         </div>
 
         <!-- History -->
-        <div class="mt-8 bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl text-white border-2 border-slate-800">
+        <div class="mt-8 bg-slate-800 rounded-[2.5rem] p-8 shadow-2xl text-white">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl">📜 History</h2>
-                <input type="date" id="logDateFilter" onchange="renderLog()" class="bg-slate-800 text-xs p-2 rounded-xl outline-none text-teal-400">
+                <input type="date" id="logDateFilter" onchange="renderLog()" class="bg-slate-700 text-xs p-2 rounded-xl outline-none text-teal-400">
             </div>
             <div id="adventureLog" class="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar"></div>
         </div>
     </div>
 
-    <!-- Spending Modal -->
-    <div id="spendModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center p-4 z-50 backdrop-blur-md">
-        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 w-full max-w-md">
+    <!-- Modals (Spent/Add) -->
+    <div id="spendModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
             <h3 class="text-3xl kid-name mb-4 text-rose-500">SPENDING!</h3>
             <div class="space-y-4">
-                <input type="text" id="spendItem" placeholder="What did you buy?" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none focus:border-rose-500 text-slate-800 dark:text-white">
-                <input type="number" id="spendAmount" step="0.01" placeholder="Price" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none text-xl font-bold focus:border-rose-500 text-slate-800 dark:text-white">
+                <input type="text" id="spendItem" placeholder="What did you buy?" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-rose-500">
+                <input type="number" id="spendAmount" step="0.01" placeholder="Price" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-rose-500">
             </div>
             <div class="flex gap-4 mt-8">
                 <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
@@ -213,13 +206,12 @@
         </div>
     </div>
 
-    <!-- Bulk Add Modal -->
-    <div id="bulkAddModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center p-4 z-50 backdrop-blur-md">
-        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 w-full max-w-md">
+    <div id="bulkAddModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
             <h3 class="text-3xl kid-name mb-4 text-teal-500">ADD FUNDS</h3>
             <div class="space-y-4">
-                <input type="text" id="bulkReason" placeholder="Reason (e.g. Extra help, Birthday)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none focus:border-teal-500 text-slate-800 dark:text-white">
-                <input type="number" id="bulkAmount" step="0.01" placeholder="Amount ($)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 outline-none text-xl font-bold focus:border-teal-500 text-slate-800 dark:text-white">
+                <input type="text" id="bulkReason" placeholder="Reason (e.g. Extra help, Birthday)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-teal-500">
+                <input type="number" id="bulkAmount" step="0.01" placeholder="Amount ($)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-teal-500">
             </div>
             <div class="flex gap-4 mt-8">
                 <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
@@ -229,6 +221,55 @@
     </div>
 
     <script>
+        // Sound Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playEarnSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+            osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // C6
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playSpendSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        const choreIcons = {
+            "Vacuuming": "🧹",
+            "Laundry Sort": "🧺",
+            "Clean Table": "🍽️",
+            "Clear Driveway": "🚗",
+            "Mop": "🧼",
+            "Clean Windows": "🪟",
+            "Wash Dishes": "🥣",
+            "Wash Clothes": "👕",
+            "Ceiling Fans": "🌀",
+            "Clean Microwave": "⏲️",
+            "Clean Shower and Sinks": "🛁",
+            "Clean Toilet": "🚽",
+            "Blow Leaves": "🍂",
+            "Weed Garden Beds": "🌱",
+            "Clean Car": "🧼🚗",
+            "Default": "✨"
+        };
+
         const kids = {
             noah: { name: 'Noah', color: '#38bdf8', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false },
             levi: { name: 'Levi', color: '#fb7185', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false }
@@ -236,23 +277,18 @@
 
         let currentKid = 'noah';
         let timelineChart;
-        let isDarkMode = true;
-        let periodicChores = ["Vacuuming", "Laundry Sort", "Clean Table", "Clear Driveway", "Mop"];
+        let periodicChores = [
+            "Vacuuming", "Laundry Sort", "Clean Table", "Clear Driveway", "Mop",
+            "Clean Windows", "Wash Dishes", "Wash Clothes", "Ceiling Fans", 
+            "Clean Microwave", "Clean Shower and Sinks", "Clean Toilet", 
+            "Blow Leaves", "Weed Garden Beds", "Clean Car"
+        ];
 
         function init() {
-            document.documentElement.classList.add('dark');
             initChart();
             renderBubbles();
             updateUI();
             document.getElementById('logDateFilter').valueAsDate = new Date();
-        }
-
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            document.documentElement.classList.toggle('dark');
-            document.getElementById('themeIcon').innerText = isDarkMode ? '☀️' : '🌙';
-            timelineChart.options.scales.y.grid.color = isDarkMode ? '#1e293b' : '#e2e8f0';
-            timelineChart.update();
         }
 
         function switchTab(kid) {
@@ -292,8 +328,9 @@
             container.innerHTML = '';
             periodicChores.forEach((chore) => {
                 const bubble = document.createElement('div');
-                bubble.className = `bubble p-4 rounded-3xl shadow-sm flex items-center justify-center text-center font-bold text-slate-500 w-24 h-24 text-[10px] leading-tight`;
-                bubble.innerText = chore;
+                const icon = choreIcons[chore] || choreIcons["Default"];
+                bubble.className = `bubble p-4 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center font-bold text-slate-600 aspect-square`;
+                bubble.innerHTML = `<span class="text-2xl mb-1">${icon}</span><span class="text-[9px] uppercase tracking-tighter leading-none">${chore}</span>`;
                 bubble.onclick = (e) => popBubble(e, chore);
                 container.appendChild(bubble);
             });
@@ -305,7 +342,7 @@
             setTimeout(() => {
                 bubble.remove();
                 rewardKid(choreName, 0.50);
-                setTimeout(() => renderBubbles(), 3000); 
+                setTimeout(() => renderBubbles(), 5000); 
             }, 400);
         }
 
@@ -316,6 +353,7 @@
             const now = new Date();
             kid.history.push({ t: now, v: kid.cash });
             kid.logs.push({ type: 'EARN', item: itemName, amount: amount, date: now });
+            playEarnSound();
             updateUI();
             updateTimeline();
             renderLog();
@@ -339,17 +377,17 @@
             if (filterDate) allLogs = allLogs.filter(e => e.date.toISOString().split('T')[0] === filterDate);
             allLogs.sort((a, b) => b.date - a.date);
             if (allLogs.length === 0) {
-                logContainer.innerHTML = '<p class="text-slate-600 italic text-center text-xs py-4">No activity yet.</p>';
+                logContainer.innerHTML = '<p class="text-slate-500 italic text-center text-xs py-4">No activity yet.</p>';
                 return;
             }
             allLogs.forEach(entry => {
                 const kid = kids.noah.logs.includes(entry) ? kids.noah : kids.levi;
                 const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border border-white/5 flex justify-between items-center text-xs ${entry.type==='EARN'?'bg-emerald-500/10':'bg-rose-500/10'}`;
+                card.className = `p-3 rounded-xl border border-white/5 flex justify-between items-center text-xs ${entry.type==='EARN'?'bg-emerald-500/20':'bg-rose-500/20'}`;
                 card.innerHTML = `
                     <div>
-                        <div class="font-bold">${kid.name}: ${entry.item}</div>
-                        <div class="opacity-40 text-[10px] uppercase">${entry.date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                        <div class="font-bold text-white">${kid.name}: ${entry.item}</div>
+                        <div class="opacity-40 text-[10px] uppercase text-white">${entry.date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
                     </div>
                     <div class="font-bold ${entry.type==='EARN'?'text-emerald-400':'text-rose-400'}">
                         ${entry.type==='EARN'?'+':'-'}$${entry.amount.toFixed(2)}
@@ -389,6 +427,7 @@
                 const now = new Date();
                 kid.history.push({ t: now, v: kid.cash });
                 kid.logs.push({ type: 'SPEND', item: item, amount: amount, date: now });
+                playSpendSound();
                 updateUI();
                 updateTimeline();
                 renderLog();
@@ -420,7 +459,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: { type: 'time', display: false },
-                        y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#64748b' } }
                     },
                     plugins: { legend: { labels: { color: '#64748b' } } }
                 }
