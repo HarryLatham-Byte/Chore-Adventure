@@ -247,17 +247,17 @@
                 <div class="grid grid-cols-3 gap-2">
                     <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
                         <input type="checkbox" id="check-bed" class="hidden" onchange="checkDailyBundle()">
-                        <img src="Icon Library/make-the-bed.png" class="w-10 h-10 mb-1 object-contain" alt="Bed">
+                        <img src="make-the-bed.png" class="w-10 h-10 mb-1 object-contain" alt="Bed">
                         <span class="text-[9px] font-bold uppercase text-slate-500">Bed</span>
                     </label>
                     <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
                         <input type="checkbox" id="check-room" class="hidden" onchange="checkDailyBundle()">
-                        <img src="Icon Library/toys.png" class="w-10 h-10 mb-1 object-contain" alt="Room">
+                        <img src="toys.png" class="w-10 h-10 mb-1 object-contain" alt="Room">
                         <span class="text-[9px] font-bold uppercase text-slate-500">Room</span>
                     </label>
                     <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
                         <input type="checkbox" id="check-teeth" class="hidden" onchange="checkDailyBundle()">
-                        <img src="Icon Library/teeth-brushing.png" class="w-10 h-10 mb-1 object-contain" alt="Teeth">
+                        <img src="teeth-brushing.png" class="w-10 h-10 mb-1 object-contain" alt="Teeth">
                         <span class="text-[9px] font-bold uppercase text-slate-500">Teeth</span>
                     </label>
                 </div>
@@ -594,7 +594,7 @@
                 const row = document.createElement('div');
                 row.className = 'flex items-center gap-3 p-3 bg-white/30 rounded-xl border border-white/30';
                 row.innerHTML = `
-                    <img src="Icon Library/${iconFile}" class="w-10 h-10 object-contain flex-shrink-0" alt="${chore}">
+                    <img src="${iconFile}" class="w-10 h-10 object-contain flex-shrink-0" alt="${chore}">
                     <span class="flex-1 font-semibold text-slate-600 truncate">${chore}</span>
                     ${isCustom ? `<button onclick="removeChore('${chore}')" class="text-pink-400 p-2 hover:bg-pink-50 rounded-lg">🗑️</button>` : ''}
                 `;
@@ -722,7 +722,7 @@
                 const iconFile = state.choreIcons[chore] || state.choreIcons["Default"];
                 bubble.className = `bubble`;
                 bubble.innerHTML = `
-                    <img src="Icon Library/${iconFile}" class="w-12 h-12 mb-2 object-contain" alt="${chore}">
+                    <img src="${iconFile}" class="w-12 h-12 mb-2 object-contain" alt="${chore}">
                     <span class="text-[10px] uppercase font-bold text-center leading-tight text-slate-500">${chore}</span>`;
                 bubble.onclick = (e) => popBubble(e, chore);
                 container.appendChild(bubble);
