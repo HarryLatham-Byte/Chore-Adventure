@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,332 +9,593 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Quicksand:wght@500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Bungee&display=swap');
+
         :root {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #1e293b;
-            --border-color: #e2e8f0;
-            --accent-teal: #008375;
-            --tab-inactive: #f1f5f9;
+            --bg-main: #f0f2f5;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --accent-primary: #6366f1;
+            --accent-secondary: #ec4899;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
         }
 
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            background-color: var(--bg-main);
-            color: var(--text-main);
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        h1, h2, h3, .kid-name { font-family: 'Bungee', cursive; }
 
-        .teal-brand-text { color: var(--accent-teal); }
-        .teal-brand-bg { background-color: var(--accent-teal); }
+        h1,
+        h2,
+        h3,
+        .kid-name {
+            font-family: 'Bungee', cursive;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .premium-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .active-tab-glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
 
         .bubble {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             user-select: none;
-            background-color: var(--bg-card);
-            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1/1;
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
-        .bubble:hover { 
-            transform: scale(1.05); 
-            border-color: var(--accent-teal); 
-            box-shadow: 0 10px 15px -3px rgba(0, 131, 117, 0.1); 
+
+        .bubble:hover {
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
         }
-        .bubble:active { transform: scale(0.95); }
-        
+
+        .bubble:active {
+            transform: scale(0.92);
+        }
+
         .pop-animation {
             animation: pop 0.4s ease-out forwards;
         }
 
         @keyframes pop {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(0); opacity: 0; }
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 0.5;
+                filter: blur(4px);
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
         }
 
         .tab-btn {
-            background-color: var(--tab-inactive);
-            color: #64748b;
+            @apply transition-all duration-300;
         }
 
-        .tab-btn.active {
-            background-color: var(--bg-card);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            color: var(--accent-teal);
-            border: 2px solid var(--accent-teal);
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            transition: all 0.3s ease;
         }
 
-        .custom-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        .nav-item.active {
+            color: var(--accent-primary);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: translateY(-4px);
+            filter: drop-shadow(0 4px 6px rgba(99, 102, 241, 0.4));
         }
 
         .daily-tile {
-            transition: all 0.2s ease;
-            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
         }
+
         .daily-tile:has(input:checked) {
-            border-color: var(--accent-teal);
-            background: rgba(0, 131, 117, 0.05);
+            background: white;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.1);
             transform: translateY(-2px);
         }
-        .daily-tile:has(input:disabled) {
-            opacity: 0.6;
-            cursor: default;
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            height: 70px;
+            z-index: 1000;
+            border-radius: 2.5rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 1rem;
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .view-content {
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
-<body class="min-h-screen pb-12">
 
-    <div class="max-w-4xl mx-auto px-4 pt-6">
-        <!-- Top Bar -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl md:text-5xl teal-brand-text drop-shadow-sm">Chore Adventure!</h1>
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">Parent Dashboard</div>
+<body class="min-h-screen pb-32">
+
+    <!-- Top Bar -->
+    <div class="max-w-md mx-auto px-6 pt-8 mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl text-indigo-600">Chore</h1>
+            <h1 class="text-2xl -mt-2 text-pink-500">Adventure!</h1>
         </div>
-
-        <!-- Chore Factory -->
-        <div class="mb-8 custom-card p-4 rounded-3xl">
-            <div class="flex gap-3">
-                <input type="text" id="customChoreInput" placeholder="Add a new adventure..." 
-                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-sm focus:border-teal-600 transition-all text-slate-800">
-                <button onclick="addCustomChore()" 
-                    class="teal-brand-bg hover:brightness-110 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg active:scale-95">
-                    ADD
-                </button>
-            </div>
+        <div id="kidSelectorContainer" class="flex gap-2">
+            <!-- Kid selector bubbles injected here -->
         </div>
+    </div>
 
-        <!-- Kid Switcher Tabs -->
-        <div class="flex bg-slate-200 p-1.5 rounded-3xl mb-8 border border-slate-300">
-            <button onclick="switchTab('noah')" id="tabNoah" class="tab-btn active flex-1 py-4 rounded-2xl font-bold transition-all">NOAH</button>
-            <button onclick="switchTab('levi')" id="tabLevi" class="tab-btn flex-1 py-4 rounded-2xl font-bold transition-all">LEVI</button>
-        </div>
+    <!-- MAIN VIEWS -->
+    <main class="max-w-md mx-auto px-4">
 
-        <!-- Daily Essentials Area -->
-        <div class="mb-8 bg-slate-100 p-6 rounded-[2.5rem] border border-slate-200">
-            <div class="flex items-center justify-between mb-4 px-2">
-                <h3 class="text-xs font-bold teal-brand-text uppercase tracking-widest">☀️ Daily Essentials</h3>
-                <span class="text-[10px] font-bold bg-teal-500/10 teal-brand-text px-2 py-1 rounded-lg border border-teal-500/20">$0.50 BONUS</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
-                    <input type="checkbox" id="check-bed" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold">🛏️ Make Bed</span>
-                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Every Morning</span>
-                    </div>
-                </label>
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
-                    <input type="checkbox" id="check-room" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold">🧸 Clean Room</span>
-                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Keep it tidy</span>
-                    </div>
-                </label>
-                <label class="daily-tile flex items-center gap-3 cursor-pointer bg-white px-5 py-4 rounded-2xl shadow-sm">
-                    <input type="checkbox" id="check-teeth" class="w-5 h-5 accent-teal-600 rounded" onchange="checkDailyBundle()">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold">🪥 Brush Teeth</span>
-                        <span class="text-[10px] opacity-50 uppercase font-bold tracking-tighter">Twice a day</span>
-                    </div>
-                </label>
-            </div>
-        </div>
+        <!-- HOME VIEW -->
+        <section id="view-home" class="view-content active space-y-6">
+            <!-- Active Kid Card -->
+            <div id="activeKidCard" class="glass rounded-[2.5rem] p-8 relative overflow-hidden premium-shadow">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-2xl">
+                </div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-pink-500/10 rounded-full -ml-12 -mb-12 blur-2xl">
+                </div>
 
-        <!-- Kid Content Area -->
-        <div id="kidContainer" class="space-y-6">
-            <div id="activeKidCard" class="custom-card rounded-[2.5rem] shadow-xl p-8 border-t-8 border-sky-400 relative overflow-hidden bg-white">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
-                    <div>
-                        <h2 id="displayKidName" class="text-3xl text-sky-500 kid-name">NOAH</h2>
-                        <div class="text-5xl font-bold tracking-tight text-slate-800">$<span id="displayCash">0.00</span></div>
-                        <div class="text-slate-400 font-bold text-xs uppercase mt-2 tracking-widest">⭐ <span id="displayCount">0</span> Chores Done</div>
+                <div class="relative z-10">
+                    <h2 id="displayKidName" class="text-2xl text-indigo-600 mb-1">NOAH</h2>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-4xl font-bold text-slate-800">$</span>
+                        <span id="displayCash" class="text-5xl font-bold tracking-tight text-slate-800">0.00</span>
                     </div>
-                    <div class="flex flex-col gap-2 w-full sm:w-auto">
-                        <button onclick="showBulkAddModal()" class="w-full bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-2xl font-bold text-xs shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2">
-                            <span>➕</span> ADD FUNDS
-                        </button>
-                        <button onclick="showSpendModal()" class="w-full bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-2xl font-bold text-xs shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2">
-                            <span>💸</span> SPEND FUNDS
-                        </button>
+                    <div
+                        class="text-slate-400 font-semibold text-xs uppercase mt-3 tracking-widest flex items-center gap-2">
+                        <span class="bg-indigo-100 text-indigo-600 px-2 py-1 rounded-lg">⭐ <span
+                                id="displayCount">0</span> Done</span>
                     </div>
                 </div>
-                
-                <h4 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest border-b pb-2">Periodic Adventures ($0.50 each)</h4>
-                <div id="bubbleZone" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 justify-center min-h-[200px] py-4">
+
+                <div class="flex gap-3 mt-8 relative z-10">
+                    <button onclick="showBulkAddModal()"
+                        class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-200 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                        <span>+</span> ADD
+                    </button>
+                    <button onclick="showSpendModal()"
+                        class="flex-1 bg-white text-pink-500 border border-pink-100 py-4 rounded-2xl font-bold text-sm shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
+                        <span>💸</span> SPEND
+                    </button>
+                </div>
+            </div>
+
+            <!-- Daily Essentials -->
+            <div class="glass rounded-[2rem] p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Daily Bundle</h3>
+                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-600 px-2 py-1 rounded-lg">$0.50
+                        BONUS</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
+                        <input type="checkbox" id="check-bed" class="hidden" onchange="checkDailyBundle()">
+                        <span class="text-xl mb-1">🛏️</span>
+                        <span class="text-[9px] font-bold uppercase text-slate-500">Bed</span>
+                    </label>
+                    <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
+                        <input type="checkbox" id="check-room" class="hidden" onchange="checkDailyBundle()">
+                        <span class="text-xl mb-1">🧸</span>
+                        <span class="text-[9px] font-bold uppercase text-slate-500">Room</span>
+                    </label>
+                    <label class="daily-tile flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer">
+                        <input type="checkbox" id="check-teeth" class="hidden" onchange="checkDailyBundle()">
+                        <span class="text-xl mb-1">🪥</span>
+                        <span class="text-[9px] font-bold uppercase text-slate-500">Teeth</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Periodic Chores -->
+            <div>
+                <h3 class="text-sm font-bold text-slate-400 mb-4 px-2 uppercase tracking-widest">Chores ($0.50 each)
+                </h3>
+                <div id="bubbleZone" class="grid grid-cols-3 gap-4">
                     <!-- Bubbles Injected Here -->
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Progress -->
-        <div class="mt-8 custom-card p-8 rounded-[2.5rem] bg-white">
-            <h3 class="text-xl font-bold mb-6 text-center teal-brand-text">Bank Growth</h3>
-            <div class="chart-container h-[250px]">
-                <canvas id="timelineChart"></canvas>
-            </div>
-        </div>
+        <!-- HISTORY VIEW -->
+        <section id="view-history" class="view-content space-y-6">
+            <div class="glass rounded-[2rem] p-6 premium-shadow">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl text-indigo-600">Activity</h2>
+                    <input type="date" id="logDateFilter" onchange="renderLog()"
+                        class="bg-indigo-50 text-indigo-600 text-xs font-bold p-2 rounded-xl border-none outline-none">
+                </div>
 
-        <!-- History -->
-        <div class="mt-8 bg-slate-800 rounded-[2.5rem] p-8 shadow-2xl text-white">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl">📜 History</h2>
-                <input type="date" id="logDateFilter" onchange="renderLog()" class="bg-slate-700 text-xs p-2 rounded-xl outline-none text-teal-400">
+                <div class="h-[200px] mb-6">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+
+                <div id="adventureLog" class="space-y-3 max-h-[400px] overflow-y-auto no-scrollbar">
+                    <!-- Logs injected here -->
+                </div>
             </div>
-            <div id="adventureLog" class="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar"></div>
-        </div>
-    </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="view-settings" class="view-content space-y-6">
+            <div class="glass rounded-[2rem] p-6 premium-shadow">
+                <h2 class="text-xl text-indigo-600 mb-6">Manage Kids</h2>
+
+                <div id="settingsKidList" class="space-y-4 mb-8">
+                    <!-- Kid edit rows injected here -->
+                </div>
+
+                <div class="pt-4 border-t border-indigo-50">
+                    <h3 class="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">Add New Kid</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="newKidName" placeholder="Name..."
+                            class="flex-1 px-4 py-3 rounded-xl border border-indigo-50 bg-indigo-50/30 outline-none focus:border-indigo-400">
+                        <button onclick="addKid()"
+                            class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-transform">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass rounded-[2rem] p-6">
+                <h3 class="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">Custom Chores</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="customChoreInput" placeholder="New chore name..."
+                        class="flex-1 px-4 py-3 rounded-xl border border-indigo-50 bg-indigo-50/30 outline-none focus:border-indigo-400">
+                    <button onclick="addCustomChore()"
+                        class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav glass premium-shadow">
+        <button onclick="showView('home')" id="nav-home" class="nav-item active">
+            <span class="nav-icon text-2xl">🏠</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+        </button>
+        <button onclick="showView('history')" id="nav-history" class="nav-item">
+            <span class="nav-icon text-2xl">📊</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">History</span>
+        </button>
+        <button onclick="showView('settings')" id="nav-settings" class="nav-item">
+            <span class="nav-icon text-2xl">⚙️</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Settings</span>
+        </button>
+    </nav>
 
     <!-- Modals (Spent/Add) -->
-    <div id="spendModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+    <div id="spendModal"
+        class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
             <h3 class="text-3xl kid-name mb-4 text-rose-500">SPENDING!</h3>
             <div class="space-y-4">
-                <input type="text" id="spendItem" placeholder="What did you buy?" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-rose-500">
-                <input type="number" id="spendAmount" step="0.01" placeholder="Price" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-rose-500">
+                <input type="text" id="spendItem" placeholder="What did you buy?"
+                    class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-rose-500">
+                <input type="number" id="spendAmount" step="0.01" placeholder="Price"
+                    class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-rose-500">
             </div>
             <div class="flex gap-4 mt-8">
                 <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
-                <button onclick="confirmSpend()" class="flex-[2] py-4 bg-rose-500 text-white rounded-2xl font-bold shadow-lg shadow-rose-500/30">Confirm</button>
+                <button onclick="confirmSpend()"
+                    class="flex-[2] py-4 bg-rose-500 text-white rounded-2xl font-bold shadow-lg shadow-rose-500/30">Confirm</button>
             </div>
         </div>
     </div>
 
-    <div id="bulkAddModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+    <div id="bulkAddModal"
+        class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
             <h3 class="text-3xl kid-name mb-4 text-teal-500">ADD FUNDS</h3>
             <div class="space-y-4">
-                <input type="text" id="bulkReason" placeholder="Reason (e.g. Extra help, Birthday)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-teal-500">
-                <input type="number" id="bulkAmount" step="0.01" placeholder="Amount ($)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-teal-500">
+                <input type="text" id="bulkReason" placeholder="Reason (e.g. Extra help, Birthday)"
+                    class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none focus:border-teal-500">
+                <input type="number" id="bulkAmount" step="0.01" placeholder="Amount ($)"
+                    class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 bg-slate-50 outline-none text-xl font-bold focus:border-teal-500">
             </div>
             <div class="flex gap-4 mt-8">
                 <button onclick="closeModals()" class="flex-1 font-bold text-slate-400">Cancel</button>
-                <button onclick="confirmBulkAdd()" class="flex-[2] py-4 bg-teal-600 text-white rounded-2xl font-bold shadow-lg shadow-teal-500/30">Add Money</button>
+                <button onclick="confirmBulkAdd()"
+                    class="flex-[2] py-4 bg-teal-600 text-white rounded-2xl font-bold shadow-lg shadow-teal-500/30">Add
+                    Money</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Sound Engine
+        // --- SOUND ENGINE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playEarnSound() {
+        function playSound(type) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-            osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // C6
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
-        }
-
-        function playSpendSound() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            if (type === 'earn') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            }
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.4);
         }
 
+        // --- CONSTANTS ---
         const choreIcons = {
-            "Vacuuming": "🧹",
-            "Laundry Sort": "🧺",
-            "Clean Table": "🍽️",
-            "Clear Driveway": "🚗",
-            "Mop": "🧼",
-            "Clean Windows": "🪟",
-            "Wash Dishes": "🥣",
-            "Wash Clothes": "👕",
-            "Ceiling Fans": "🌀",
-            "Clean Microwave": "⏲️",
-            "Clean Shower and Sinks": "🛁",
-            "Clean Toilet": "🚽",
-            "Blow Leaves": "🍂",
-            "Weed Garden Beds": "🌱",
-            "Clean Car": "🧼🚗",
+            "Vacuuming": "🧹", "Laundry Sort": "🧺", "Clean Table": "🍽️", "Clear Driveway": "🚗",
+            "Mop": "🧼", "Clean Windows": "🪟", "Wash Dishes": "🥣", "Wash Clothes": "👕",
+            "Ceiling Fans": "🌀", "Clean Microwave": "⏲️", "Clean Shower and Sinks": "🛁",
+            "Clean Toilet": "🚽", "Blow Leaves": "🍂", "Weed Garden Beds": "🌱", "Clean Car": "🧼🚗",
             "Default": "✨"
         };
 
-        const kids = {
-            noah: { name: 'Noah', color: '#38bdf8', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false },
-            levi: { name: 'Levi', color: '#fb7185', cash: 0, count: 0, history: [{t: new Date(), v: 0}], logs: [], dailyDone: false }
+        // --- STATE MANAGEMENT ---
+        let state = {
+            kids: [], // Array of objects: { id, name, cash, count, history, logs, dailyBundle: {bed: false, room: false, teeth: false, done: false} }
+            currentKidId: null,
+            periodicChores: ["Vacuuming", "Laundry Sort", "Clean Table", "Clear Driveway", "Mop", "Clean Windows", "Wash Dishes", "Wash Clothes", "Ceiling Fans", "Clean Microwave", "Clean Shower and Sinks", "Clean Toilet", "Blow Leaves", "Weed Garden Beds", "Clean Car"],
+            currentView: 'home'
         };
 
-        let currentKid = 'noah';
-        let timelineChart;
-        let periodicChores = [
-            "Vacuuming", "Laundry Sort", "Clean Table", "Clear Driveway", "Mop",
-            "Clean Windows", "Wash Dishes", "Wash Clothes", "Ceiling Fans", 
-            "Clean Microwave", "Clean Shower and Sinks", "Clean Toilet", 
-            "Blow Leaves", "Weed Garden Beds", "Clean Car"
-        ];
-
-        function init() {
-            initChart();
-            renderBubbles();
-            updateUI();
-            document.getElementById('logDateFilter').valueAsDate = new Date();
+        function saveState() {
+            localStorage.setItem('choreAdventureState', JSON.stringify(state));
         }
 
-        function switchTab(kid) {
-            currentKid = kid;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(kid === 'noah' ? 'tabNoah' : 'tabLevi').classList.add('active');
-            
-            const k = kids[currentKid];
-            document.getElementById('check-bed').checked = k.dailyDone;
-            document.getElementById('check-room').checked = k.dailyDone;
-            document.getElementById('check-teeth').checked = k.dailyDone;
-            document.getElementById('check-bed').disabled = k.dailyDone;
-            document.getElementById('check-room').disabled = k.dailyDone;
-            document.getElementById('check-teeth').disabled = k.dailyDone;
-
-            updateUI();
-            renderBubbles();
-        }
-
-        function checkDailyBundle() {
-            const bed = document.getElementById('check-bed').checked;
-            const room = document.getElementById('check-room').checked;
-            const teeth = document.getElementById('check-teeth').checked;
-            const kid = kids[currentKid];
-
-            if (bed && room && teeth && !kid.dailyDone) {
-                kid.dailyDone = true;
-                rewardKid("Daily Trio Bundle", 0.50);
-                document.getElementById('check-bed').disabled = true;
-                document.getElementById('check-room').disabled = true;
-                document.getElementById('check-teeth').disabled = true;
+        function loadState() {
+            const saved = localStorage.getItem('choreAdventureState');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Re-hydrate dates
+                parsed.kids.forEach(k => {
+                    k.history.forEach(h => h.x = new Date(h.x));
+                    k.logs.forEach(l => l.date = new Date(l.date));
+                });
+                state = parsed;
+            } else {
+                // Initial Default Data (Optional, user wanted to remove Levi/Noah default but good for first run if empty)
+                // We'll leave it empty as per request: "(not defaulted to Levi and Noah)"
             }
         }
 
-        function renderBubbles() {
-            const container = document.getElementById('bubbleZone');
+        // --- UI ROUTING ---
+        function showView(viewId) {
+            state.currentView = viewId;
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+
+            if (viewId === 'history') initChart();
+            if (viewId === 'settings') renderSettings();
+            saveState();
+        }
+
+        // --- KID MANAGEMENT ---
+        function addKid() {
+            const input = document.getElementById('newKidName');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const newKid = {
+                id: Date.now(),
+                name: name,
+                cash: 0,
+                count: 0,
+                history: [{ x: new Date(), y: 0 }],
+                logs: [],
+                dailyBundle: { bed: false, room: false, teeth: false, done: false }
+            };
+
+            state.kids.push(newKid);
+            if (state.kids.length === 1) state.currentKidId = newKid.id;
+
+            input.value = '';
+            renderKidSelectors();
+            renderSettings();
+            updateUI();
+            saveState();
+        }
+
+        function removeKid(id) {
+            state.kids = state.kids.filter(k => k.id !== id);
+            if (state.currentKidId === id) {
+                state.currentKidId = state.kids.length > 0 ? state.kids[0].id : null;
+            }
+            renderKidSelectors();
+            renderSettings();
+            updateUI();
+            saveState();
+        }
+
+        function switchKid(id) {
+            state.currentKidId = id;
+            updateUI();
+            renderKidSelectors();
+            saveState();
+        }
+
+        function renderKidSelectors() {
+            const container = document.getElementById('kidSelectorContainer');
             container.innerHTML = '';
-            periodicChores.forEach((chore) => {
-                const bubble = document.createElement('div');
-                const icon = choreIcons[chore] || choreIcons["Default"];
-                bubble.className = `bubble p-4 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center font-bold text-slate-600 aspect-square`;
-                bubble.innerHTML = `<span class="text-2xl mb-1">${icon}</span><span class="text-[9px] uppercase tracking-tighter leading-none">${chore}</span>`;
-                bubble.onclick = (e) => popBubble(e, chore);
+            state.kids.forEach(k => {
+                const isActive = k.id === state.currentKidId;
+                const bubble = document.createElement('button');
+                bubble.onclick = () => switchKid(k.id);
+                bubble.className = `w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${isActive ? 'bg-indigo-600 text-white active-tab-glow' : 'bg-indigo-50 text-indigo-400'}`;
+                bubble.innerText = k.name.charAt(0).toUpperCase();
                 container.appendChild(bubble);
             });
+        }
+
+        function renderSettings() {
+            const container = document.getElementById('settingsKidList');
+            container.innerHTML = '';
+            state.kids.forEach(k => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 p-4 bg-white/50 rounded-2xl border border-white/50';
+                row.innerHTML = `
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">${k.name.charAt(0).toUpperCase()}</div>
+                    <input type="text" value="${k.name}" onchange="updateKidName(${k.id}, this.value)" class="flex-1 bg-transparent border-none outline-none font-semibold text-slate-700">
+                    <button onclick="removeKid(${k.id})" class="text-pink-500 p-2 hover:bg-pink-50 rounded-lg">🗑️</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function updateKidName(id, newName) {
+            const kid = state.kids.find(k => k.id === id);
+            if (kid) kid.name = newName;
+            renderKidSelectors();
+            updateUI();
+            saveState();
+        }
+
+        // --- GAME LOGIC ---
+        function checkDailyBundle() {
+            if (!state.currentKidId) return;
+            const kid = state.kids.find(k => k.id === state.currentKidId);
+
+            kid.dailyBundle.bed = document.getElementById('check-bed').checked;
+            kid.dailyBundle.room = document.getElementById('check-room').checked;
+            kid.dailyBundle.teeth = document.getElementById('check-teeth').checked;
+
+            if (kid.dailyBundle.bed && kid.dailyBundle.room && kid.dailyBundle.teeth && !kid.dailyBundle.done) {
+                kid.dailyBundle.done = true;
+                rewardKid("Daily Trio Bundle", 0.50);
+                updateUI();
+            }
+            saveState();
+        }
+
+        function rewardKid(itemName, amount) {
+            const kid = state.kids.find(k => k.id === state.currentKidId);
+            if (!kid) return;
+
+            kid.cash += amount;
+            if (amount === 0.50) kid.count += 1;
+
+            const now = new Date();
+            kid.history.push({ x: now, y: kid.cash });
+            kid.logs.push({ type: 'EARN', item: itemName, amount: amount, date: now });
+
+            playSound('earn');
+            updateUI();
+            saveState();
+        }
+
+        function confirmSpend() {
+            const item = document.getElementById('spendItem').value.trim() || 'Shopping';
+            const amount = parseFloat(document.getElementById('spendAmount').value) || 0;
+            const kid = state.kids.find(k => k.id === state.currentKidId);
+
+            if (kid && amount > 0) {
+                kid.cash -= amount;
+                const now = new Date();
+                kid.history.push({ x: now, y: kid.cash });
+                kid.logs.push({ type: 'SPEND', item: item, amount: amount, date: now });
+                playSound('spend');
+                updateUI();
+                closeModals();
+                saveState();
+            }
+        }
+
+        function confirmBulkAdd() {
+            const reason = document.getElementById('bulkReason').value.trim() || 'Extra Reward';
+            const amount = parseFloat(document.getElementById('bulkAmount').value) || 0;
+            if (amount > 0) {
+                rewardKid(`🌟 ${reason}`, amount);
+                closeModals();
+            }
         }
 
         function popBubble(event, choreName) {
@@ -342,137 +604,151 @@
             setTimeout(() => {
                 bubble.remove();
                 rewardKid(choreName, 0.50);
-                setTimeout(() => renderBubbles(), 5000); 
+                setTimeout(() => renderBubbles(), 8000);
             }, 400);
-        }
-
-        function rewardKid(itemName, amount) {
-            const kid = kids[currentKid];
-            kid.cash += amount;
-            if (amount === 0.50) kid.count += 1;
-            const now = new Date();
-            kid.history.push({ t: now, v: kid.cash });
-            kid.logs.push({ type: 'EARN', item: itemName, amount: amount, date: now });
-            playEarnSound();
-            updateUI();
-            updateTimeline();
-            renderLog();
-        }
-
-        function updateUI() {
-            const kid = kids[currentKid];
-            const card = document.getElementById('activeKidCard');
-            card.style.borderTopColor = kid.color;
-            document.getElementById('displayKidName').innerText = kid.name.toUpperCase();
-            document.getElementById('displayKidName').style.color = kid.color;
-            document.getElementById('displayCash').innerText = kid.cash.toFixed(2);
-            document.getElementById('displayCount').innerText = kid.count;
-        }
-
-        function renderLog() {
-            const logContainer = document.getElementById('adventureLog');
-            const filterDate = document.getElementById('logDateFilter').value;
-            logContainer.innerHTML = '';
-            let allLogs = [...kids.noah.logs, ...kids.levi.logs];
-            if (filterDate) allLogs = allLogs.filter(e => e.date.toISOString().split('T')[0] === filterDate);
-            allLogs.sort((a, b) => b.date - a.date);
-            if (allLogs.length === 0) {
-                logContainer.innerHTML = '<p class="text-slate-500 italic text-center text-xs py-4">No activity yet.</p>';
-                return;
-            }
-            allLogs.forEach(entry => {
-                const kid = kids.noah.logs.includes(entry) ? kids.noah : kids.levi;
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border border-white/5 flex justify-between items-center text-xs ${entry.type==='EARN'?'bg-emerald-500/20':'bg-rose-500/20'}`;
-                card.innerHTML = `
-                    <div>
-                        <div class="font-bold text-white">${kid.name}: ${entry.item}</div>
-                        <div class="opacity-40 text-[10px] uppercase text-white">${entry.date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
-                    </div>
-                    <div class="font-bold ${entry.type==='EARN'?'text-emerald-400':'text-rose-400'}">
-                        ${entry.type==='EARN'?'+':'-'}$${entry.amount.toFixed(2)}
-                    </div>`;
-                logContainer.appendChild(card);
-            });
         }
 
         function addCustomChore() {
             const input = document.getElementById('customChoreInput');
             const val = input.value.trim();
             if (val) {
-                periodicChores.push(val);
+                state.periodicChores.push(val);
                 input.value = '';
                 renderBubbles();
+                saveState();
             }
         }
 
-        window.showSpendModal = () => document.getElementById('spendModal').classList.replace('hidden', 'flex');
-        window.showBulkAddModal = () => document.getElementById('bulkAddModal').classList.replace('hidden', 'flex');
-        
-        window.closeModals = () => {
-            document.getElementById('spendModal').classList.replace('flex', 'hidden');
-            document.getElementById('bulkAddModal').classList.replace('flex', 'hidden');
-            document.getElementById('spendItem').value = '';
-            document.getElementById('spendAmount').value = '';
-            document.getElementById('bulkReason').value = '';
-            document.getElementById('bulkAmount').value = '';
-        };
-
-        window.confirmSpend = () => {
-            const item = document.getElementById('spendItem').value.trim() || 'Shopping';
-            const amount = parseFloat(document.getElementById('spendAmount').value) || 0;
-            const kid = kids[currentKid];
-            if (amount > 0) {
-                kid.cash -= amount;
-                const now = new Date();
-                kid.history.push({ t: now, v: kid.cash });
-                kid.logs.push({ type: 'SPEND', item: item, amount: amount, date: now });
-                playSpendSound();
-                updateUI();
-                updateTimeline();
-                renderLog();
-                closeModals();
+        // --- RENDERING ---
+        function updateUI() {
+            if (!state.currentKidId) {
+                document.getElementById('view-home').innerHTML = '<div class="flex flex-col items-center justify-center p-20 text-center opacity-50"><span class="text-6xl mb-4">👋</span><p class="font-bold">Add a kid in Settings to start!</p></div>';
+                return;
+            } else if (document.getElementById('view-home').innerHTML.includes('Add a kid')) {
+                location.reload(); // Force full re-init if we just added the first kid
+                return;
             }
-        };
 
-        window.confirmBulkAdd = () => {
-            const reason = document.getElementById('bulkReason').value.trim() || 'Extra Reward';
-            const amount = parseFloat(document.getElementById('bulkAmount').value) || 0;
-            if (amount > 0) {
-                rewardKid(`🌟 ${reason}`, amount);
-                closeModals();
+            const kid = state.kids.find(k => k.id === state.currentKidId);
+            document.getElementById('displayKidName').innerText = kid.name.toUpperCase();
+            document.getElementById('displayCash').innerText = kid.cash.toFixed(2);
+            document.getElementById('displayCount').innerText = kid.count;
+
+            document.getElementById('check-bed').checked = kid.dailyBundle.bed;
+            document.getElementById('check-room').checked = kid.dailyBundle.room;
+            document.getElementById('check-teeth').checked = kid.dailyBundle.teeth;
+
+            // Disable if done
+            const bundleDone = kid.dailyBundle.done;
+            document.querySelectorAll('.daily-tile input').forEach(inp => inp.disabled = bundleDone);
+
+            renderBubbles();
+            renderLog();
+        }
+
+        function renderBubbles() {
+            const container = document.getElementById('bubbleZone');
+            if (!container) return;
+            container.innerHTML = '';
+            state.periodicChores.forEach((chore) => {
+                const bubble = document.createElement('div');
+                const icon = choreIcons[chore] || choreIcons["Default"];
+                bubble.className = `bubble`;
+                bubble.innerHTML = `<span class="text-3xl mb-1">${icon}</span><span class="text-[10px] uppercase font-bold text-center leading-tight text-slate-500">${chore}</span>`;
+                bubble.onclick = (e) => popBubble(e, chore);
+                container.appendChild(bubble);
+            });
+        }
+
+        function renderLog() {
+            const logContainer = document.getElementById('adventureLog');
+            if (!logContainer) return;
+            const filterDate = document.getElementById('logDateFilter').value;
+            logContainer.innerHTML = '';
+
+            let allLogs = [];
+            state.kids.forEach(k => {
+                k.logs.forEach(l => allLogs.push({ ...l, kidName: k.name }));
+            });
+
+            if (filterDate) {
+                allLogs = allLogs.filter(e => e.date.toISOString().split('T')[0] === filterDate);
             }
-        };
 
+            allLogs.sort((a, b) => b.date - a.date);
+
+            if (allLogs.length === 0) {
+                logContainer.innerHTML = '<p class="text-slate-400 italic text-center text-xs py-8">No activity yet.</p>';
+                return;
+            }
+
+            allLogs.forEach(entry => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl flex justify-between items-center transition-all ${entry.type === 'EARN' ? 'bg-emerald-50 text-emerald-700' : 'bg-pink-50 text-pink-700'}`;
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-lg">${entry.type === 'EARN' ? '✨' : '💸'}</div>
+                        <div>
+                            <div class="font-bold text-sm">${entry.kidName}: ${entry.item}</div>
+                            <div class="opacity-60 text-[10px] font-bold uppercase">${new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        </div>
+                    </div>
+                    <div class="font-bold">
+                        ${entry.type === 'EARN' ? '+' : '-'}$${entry.amount.toFixed(2)}
+                    </div>`;
+                logContainer.appendChild(card);
+            });
+        }
+
+        // --- CHART ---
+        let timelineChart;
         function initChart() {
-            const ctx = document.getElementById('timelineChart').getContext('2d');
-            timelineChart = new Chart(ctx, {
+            const ctx = document.getElementById('timelineChart');
+            if (!ctx) return;
+
+            if (timelineChart) timelineChart.destroy();
+
+            const datasets = state.kids.map(k => ({
+                label: k.name,
+                borderColor: k.id === state.currentKidId ? '#6366f1' : '#cbd5e1',
+                borderWidth: k.id === state.currentKidId ? 3 : 1,
+                data: k.history,
+                tension: 0.4,
+                pointRadius: 0
+            }));
+
+            timelineChart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
-                data: {
-                    datasets: [
-                        { label: 'Noah', borderColor: '#38bdf8', data: kids.noah.history.map(h => ({x: h.t, y: h.v})), tension: 0.3, fill: false },
-                        { label: 'Levi', borderColor: '#fb7185', data: kids.levi.history.map(h => ({x: h.t, y: h.v})), tension: 0.3, fill: false }
-                    ]
-                },
+                data: { datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
                         x: { type: 'time', display: false },
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#64748b' } }
+                        y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
                     },
-                    plugins: { legend: { labels: { color: '#64748b' } } }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        function updateTimeline() {
-            timelineChart.data.datasets[0].data = kids.noah.history.map(h => ({x: h.t, y: h.v}));
-            timelineChart.data.datasets[1].data = kids.levi.history.map(h => ({x: h.t, y: h.v}));
-            timelineChart.update();
-        }
+        // --- HELPERS ---
+        window.showSpendModal = () => document.getElementById('spendModal').classList.replace('hidden', 'flex');
+        window.showBulkAddModal = () => document.getElementById('bulkAddModal').classList.replace('hidden', 'flex');
+        window.closeModals = () => {
+            document.querySelectorAll('.fixed.inset-0').forEach(m => m.classList.replace('flex', 'hidden'));
+        };
 
-        window.onload = init;
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            loadState();
+            renderKidSelectors();
+            updateUI();
+            document.getElementById('logDateFilter').valueAsDate = new Date();
+            // Show Home by default
+            showView(state.currentView || 'home');
+        };
     </script>
 </body>
+
 </html>
